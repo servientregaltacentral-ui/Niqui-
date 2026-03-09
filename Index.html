@@ -1,89 +1,139 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Central de Cobros</title>
-  <style>
-    body { font-family: Arial; background: #f4f6f9; padding: 30px; }
-    .panel { max-width: 420px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; }
-    input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; }
-    button { width: 100%; padding: 14px; background: #ff6a00; border: none; color: white; font-size: 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-    .resultado { margin-top: 20px; padding: 15px; background: #f1f1f1; border-radius: 6px; }
-    .link { word-break: break-all; font-size: 14px; }
-  </style>
-  <script src="https:                                                                 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, set } from "https:                                                         
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_AUTH_DOMAIN",
-      databaseURL: "TU_DATABASE_URL",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_STORAGE_BUCKET",
-      messagingSenderId: "TU_MESSAGING_SENDER_ID",
-      appId: "TU_APP_ID"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-  </script>
+<title>Central de Cobros</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f2f4f8;
+padding:30px;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:15px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+#resultado{
+margin-top:20px;
+padding:15px;
+background:#e9f3ff;
+border-radius:6px;
+display:none;
+}
+
+</style>
+
 </head>
+
 <body>
-  <div class="panel">
-    <h2>Generar Cobro</h2>
-    <input id="cliente" placeholder="Nombre cliente">
-    <input id="producto" placeholder="Producto">
-    <input id="precio" placeholder="Precio">
-    <input id="telefono" placeholder="WhatsApp cliente">
-    <button onclick="crearPedido()">Generar Link de Pago</button>
-    <div id="resultado" class="resultado" style="display:none"></div>
-  </div>
 
-  <script>
-    function crearPedido() {
-      let cliente = document.getElementById("cliente").value;
-      let producto = document.getElementById("producto").value;
-      let precio = document.getElementById("precio").value;
-      let telefono = document.getElementById("telefono").value;
-      let pedido = Math.floor(Math.random() * 900000 + 100000);
-      let link = window.location.href + "pago/" + pedido;
-      let mensaje = "Hola " + cliente + "%0A%0A" + "Tu pedido está listo:%0A" + "Producto: " + producto + "%0A" + "Valor: $" + precio + "%0A%0A" + "Paga aquí:%0A" + link;
-      let whatsapp = "https://wa.me/57" + telefono + "?text=" + mensaje;
-      let html = `
-        <b>ID Pedido:</b> ${pedido}<br><br>
-        <b>Link de pago:</b><br>
-        <div class="link">${link}</div><br>
-        <div id="qrcode"></div><br>
-        <a href="${whatsapp}" target="_blank">
-          <button>Enviar por WhatsApp</button>
-        </a>
-        <br><br>
-        <input id="otp" placeholder="Código OTP">
-        <button onclick="validarOTP(${pedido})">Autorizar Pago</button>
-      `;
-      document.getElementById("resultado").style.display = "block";
-      document.getElementById("resultado").innerHTML = html;
-      new QRCode(document.getElementById("qrcode"), link);
+<div class="container">
 
-      // Guardar en Firebase
-      set(ref(db, 'pedidos/' + pedido), {
-        cliente, producto, precio, estado: 'PENDIENTE'
-      });
-    }
+<h1>Central de Cobros</h1>
 
-    function validarOTP(pedido) {
-      let otp = document.getElementById("otp").value;
-      if (otp === "123456") { // Simulación OTP
-        set(ref(db, 'pedidos/' + pedido + '/estado'), 'PAGADO');
-        alert("Pago autorizado");
-      } else {
-        alert("OTP inválido");
-      }
-    }
-  </script>
+<input id="cliente" placeholder="Nombre del cliente">
+
+<input id="telefono" placeholder="Teléfono">
+
+<input id="valor" placeholder="Valor del cobro">
+
+<button onclick="generarCobro()">Generar Cobro</button>
+
+<div id="resultado"></div>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyDGqJeIuTqMQ6EuBRS4oTA5oKYdZUOj1IU",
+authDomain: "deposito-asegurado-guia.firebaseapp.com",
+projectId: "deposito-asegurado-guia",
+storageBucket: "deposito-asegurado-guia.firebasestorage.app",
+messagingSenderId: "747606323990",
+appId: "1:747606323990:web:e39f2ff3e4d50345391637"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.generarCobro = function(){
+
+let cliente = document.getElementById("cliente").value
+let telefono = document.getElementById("telefono").value
+let valor = document.getElementById("valor").value
+
+let codigo = Math.floor(100000 + Math.random() * 900000)
+
+push(ref(db,"cobros"),{
+
+cliente:cliente,
+telefono:telefono,
+valor:valor,
+codigo:codigo,
+fecha:Date.now()
+
+})
+
+document.getElementById("resultado").style.display="block"
+document.getElementById("resultado").innerHTML=`
+
+<b>Cobro generado</b><br><br>
+
+Cliente: ${cliente}<br>
+Teléfono: ${telefono}<br>
+Valor: $${valor}<br>
+Código: <b>${codigo}</b>
+
+`
+
+}
+
+</script>
+
 </body>
 </html>
-

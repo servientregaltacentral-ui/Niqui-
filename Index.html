@@ -1,292 +1,209 @@
-<!DOCTYPE html>
-<html lang="es">
+here<!DOCTYPE html><html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NIQUI</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+<title>Central de Cobros</title><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script><style>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial, Helvetica, sans-serif;
+}
 
 body{
-    background:#2b0035;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+background:#f4f6f9;
+padding:30px;
 }
 
-.app{
-    width:360px;
-    height:740px;
-    background:linear-gradient(180deg,#4b0066,#2d003d);
-    border-radius:30px;
-    overflow:hidden;
-    box-shadow:0 20px 40px rgba(0,0,0,0.5);
-    position:relative;
-    color:white;
+.panel{
+max-width:500px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 25px rgba(0,0,0,0.1);
 }
 
-.header{padding:30px 20px;}
-.header h2{font-size:16px;font-weight:400;opacity:0.8;}
-.header h1{font-size:22px;font-weight:600;margin-top:5px;}
-
-.balance-card{
-    background:white;
-    margin:0 20px;
-    padding:20px;
-    border-radius:20px;
-    margin-top:10px;
-    color:#4b0066;
+h2{
+text-align:center;
+margin-bottom:20px;
 }
 
-.balance-card p{font-size:14px;color:#777;}
-.balance-card h3{font-size:26px;margin-top:8px;}
-
-.actions{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-    padding:30px 20px;
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border:1px solid #ddd;
+border-radius:6px;
 }
 
-.action{
-    background:white;
-    padding:15px;
-    border-radius:15px;
-    text-align:center;
-    font-size:14px;
-    font-weight:500;
-    color:#4b0066;
-    cursor:pointer;
-    transition:0.2s;
+button{
+width:100%;
+padding:14px;
+background:#ff6a00;
+border:none;
+color:white;
+font-size:16px;
+border-radius:6px;
+cursor:pointer;
+margin-top:10px;
 }
 
-.action:hover{transform:scale(1.05);}
-
-.bottom-nav{
-    position:absolute;
-    bottom:0;
-    width:100%;
-    background:white;
-    display:flex;
-    justify-content:space-around;
-    padding:15px 0;
+.resultado{
+margin-top:20px;
+padding:15px;
+background:#f1f1f1;
+border-radius:6px;
 }
 
-.bottom-nav div{
-    font-size:13px;
-    font-weight:600;
-    color:#777;
+.link{
+word-break:break-all;
+font-size:14px;
+margin:10px 0;
 }
 
-.bottom-nav .active{color:#4b0066;}
-
-/* ===== VOUCHER MODAL ===== */
-
-.voucher-modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.75);
-    backdrop-filter:blur(6px);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:999;
+.historial{
+margin-top:30px;
 }
 
-.voucher-card{
-    width:90%;
-    max-width:380px;
-    background:linear-gradient(145deg,#1a0126,#2d003d);
-    padding:25px;
-    border-radius:20px;
-    position:relative;
-    box-shadow:0 0 40px rgba(255,0,150,0.25);
-    animation:slideUp 0.4s ease;
+.pedido{
+padding:12px;
+border-bottom:1px solid #eee;
+font-size:14px;
 }
 
-.watermark{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    font-size:70px;
-    opacity:0.05;
-    font-weight:700;
+.estado{
+font-weight:bold;
 }
 
-.voucher-header{text-align:center;}
-.status-success{color:#00ffae;margin-top:5px;font-size:14px;}
-
-.voucher-amount{
-    text-align:center;
-    font-size:26px;
-    margin:20px 0;
-    font-weight:600;
+.pagado{
+color:green;
 }
 
-.voucher-info p,
-.voucher-box p{
-    font-size:13px;
-    margin:5px 0;
+.pendiente{
+color:red;
 }
 
-.voucher-box{
-    background:rgba(255,255,255,0.05);
-    padding:12px;
-    border-radius:12px;
-    margin-top:10px;
+.smallbtn{
+margin-top:8px;
+padding:8px;
+font-size:13px;
+background:#444;
 }
 
-.qr-container{text-align:center;margin:15px 0;}
-
-.digital-seal{
-    text-align:center;
-    font-size:12px;
-    color:#ff4dd2;
-    margin-bottom:15px;
+canvas{
+margin-top:10px;
 }
 
-.voucher-buttons button{
-    width:100%;
-    padding:12px;
-    margin-top:8px;
-    border:none;
-    border-radius:12px;
-    background:linear-gradient(90deg,#ff00cc,#ff4dd2);
-    color:white;
-    font-weight:600;
-    cursor:pointer;
+</style></head><body><div class="panel"><h2>Central de Cobros Online</h2><input id="cliente" placeholder="Nombre cliente"><input id="producto" placeholder="Producto"><input id="precio" placeholder="Precio"><input id="telefono" placeholder="WhatsApp cliente (sin 57)"><button onclick="crearPedido()">Generar Link de Pago</button>
+
+<div id="resultado" class="resultado" style="display:none"></div><div class="historial"><h3>Historial de pedidos</h3><div id="listaPedidos"></div></div></div><script>
+
+let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+function guardar(){
+localStorage.setItem("pedidos", JSON.stringify(pedidos));
 }
 
-.voucher-buttons .secondary{
-    background:transparent;
-    border:1px solid #ff4dd2;
+function crearPedido(){
+
+let cliente = document.getElementById("cliente").value;
+let producto = document.getElementById("producto").value;
+let precio = document.getElementById("precio").value;
+let telefono = document.getElementById("telefono").value;
+
+let pedidoID = "PED" + Date.now();
+
+let link = "https://tusitio.com/pago/" + pedidoID;
+
+let mensaje = "Hola " + cliente +
+"%0A%0A" +
+"Tu pedido está listo:%0A" +
+"Producto: " + producto +
+"%0A" +
+"Valor: $" + precio +
+"%0A%0A" +
+"Paga aquí:%0A" +
+link;
+
+let whatsapp = "https://wa.me/57" + telefono + "?text=" + mensaje;
+
+pedidos.push({
+id: pedidoID,
+cliente: cliente,
+producto: producto,
+precio: precio,
+telefono: telefono,
+estado: "PENDIENTE"
+});
+
+guardar();
+mostrarPedidos();
+
+let html = `
+<b>ID Pedido:</b> ${pedidoID}<br>
+<b>Link de pago:</b>
+<div class="link">${link}</div>
+<canvas id="qr"></canvas>
+
+<a href="${whatsapp}" target="_blank">
+<button>Enviar por WhatsApp</button>
+</a>
+`;
+
+document.getElementById("resultado").style.display = "block";
+document.getElementById("resultado").innerHTML = html;
+
+QRCode.toCanvas(document.getElementById("qr"), link);
+
 }
 
-@keyframes slideUp{
-    from{transform:translateY(30px);opacity:0;}
-    to{transform:translateY(0);opacity:1;}
-}
-</style>
-</head>
+function mostrarPedidos(){
 
-<body>
+let lista = document.getElementById("listaPedidos");
 
-<div class="app">
+lista.innerHTML = "";
 
-    <div class="header">
-        <h2>Hola,</h2>
-        <h1>Usuario NIQUI</h1>
-    </div>
+pedidos.forEach((p,i)=>{
 
-    <div class="balance-card">
-        <p>Saldo disponible</p>
-        <h3>$ 1.250.000</h3>
-    </div>
+let clase = p.estado=="PAGADO" ? "pagado":"pendiente";
 
-    <div class="actions">
-        <div class="action" onclick="generateVoucher('Juan Pérez','3001234567',750000)">Enviar</div>
-        <div class="action">Recargar</div>
-        <div class="action">Retirar</div>
-        <div class="action">Servicios</div>
-        <div class="action">Transferir</div>
-        <div class="action">Historial</div>
-    </div>
+lista.innerHTML += `
 
-    <div class="bottom-nav">
-        <div class="active">Inicio</div>
-        <div>Tarjeta</div>
-        <div>Perfil</div>
-    </div>
+<div class="pedido">
+
+<b>${p.producto}</b><br>
+
+Cliente: ${p.cliente}<br>
+
+Valor: $${p.precio}<br>
+
+Estado: <span class="estado ${clase}">${p.estado}</span><br>
+
+<button class="smallbtn" onclick="marcarPagado(${i})">
+Marcar Pagado
+</button>
 
 </div>
 
-<!-- VOUCHER -->
-<div id="voucherModal" class="voucher-modal">
-  <div class="voucher-card">
+`;
 
-    <div class="watermark">NIQUI</div>
+});
 
-    <div class="voucher-header">
-      <h3>Comprobante de Transacción</h3>
-      <div class="status-success">✔ Transacción Exitosa</div>
-    </div>
-
-    <div class="voucher-amount" id="voucherAmount"></div>
-
-    <div class="voucher-info">
-      <p><strong>ID:</strong> <span id="txnId"></span></p>
-      <p><strong>Fecha:</strong> <span id="txnDate"></span></p>
-      <p><strong>Código:</strong> <span id="verifyCode"></span></p>
-    </div>
-
-    <div class="voucher-box">
-      <p><strong>Destinatario:</strong> <span id="destName"></span></p>
-      <p><strong>Número:</strong> <span id="destNumber"></span></p>
-      <p><strong>Método:</strong> Transferencia Digital</p>
-    </div>
-
-    <div class="qr-container">
-      <canvas id="qrCode"></canvas>
-    </div>
-
-    <div class="digital-seal">
-      ✔ Verificado Digitalmente
-    </div>
-
-    <div class="voucher-buttons">
-      <button onclick="window.print()">Descargar PDF</button>
-      <button class="secondary" onclick="closeVoucher()">Cerrar</button>
-    </div>
-
-  </div>
-</div>
-
-<script>
-function closeVoucher(){
-    document.getElementById("voucherModal").style.display="none";
 }
 
-function generateVoucher(nombre, numero, monto){
+function marcarPagado(i){
 
-  document.getElementById("voucherModal").style.display="flex";
+pedidos[i].estado="PAGADO";
 
-  const now=new Date();
-  const year=now.getFullYear();
-  const month=String(now.getMonth()+1).padStart(2,'0');
-  const day=String(now.getDate()).padStart(2,'0');
-  const dateCode=`${year}${month}${day}`;
+guardar();
 
-  let counter=parseInt(localStorage.getItem("txnCounter"))||0;
-  const lastDate=localStorage.getItem("lastTxnDate");
+mostrarPedidos();
 
-  if(lastDate!==dateCode){counter=0;}
-
-  counter++;
-  localStorage.setItem("txnCounter",counter);
-  localStorage.setItem("lastTxnDate",dateCode);
-
-  const consecutive=String(counter).padStart(4,'0');
-  const txn=`TXN-${dateCode}-${consecutive}`;
-  const verify="VCH-"+Math.random().toString(36).substring(2,8).toUpperCase();
-
-  document.getElementById("txnId").innerText=txn;
-  document.getElementById("txnDate").innerText=now.toLocaleString();
-  document.getElementById("verifyCode").innerText=verify;
-  document.getElementById("destName").innerText=nombre;
-  document.getElementById("destNumber").innerText=numero;
-
-  document.getElementById("voucherAmount").innerText=
-  new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP'}).format(monto);
-
-  QRCode.toCanvas(document.getElementById("qrCode"),
-  txn+"|"+verify,{width:120});
 }
-</script>
 
-</body>
+mostrarPedidos();
+
+</script></body>
 </html>

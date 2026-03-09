@@ -1,209 +1,89 @@
-here<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Central de Cobros</title><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script><style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central de Cobros</title>
+  <style>
+    body { font-family: Arial; background: #f4f6f9; padding: 30px; }
+    .panel { max-width: 420px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; }
+    button { width: 100%; padding: 14px; background: #ff6a00; border: none; color: white; font-size: 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    .resultado { margin-top: 20px; padding: 15px; background: #f1f1f1; border-radius: 6px; }
+    .link { word-break: break-all; font-size: 14px; }
+  </style>
+  <script src="https:                                                                 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, set } from "https:                                                         
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:Arial, Helvetica, sans-serif;
-}
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      databaseURL: "TU_DATABASE_URL",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_STORAGE_BUCKET",
+      messagingSenderId: "TU_MESSAGING_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+  </script>
+</head>
+<body>
+  <div class="panel">
+    <h2>Generar Cobro</h2>
+    <input id="cliente" placeholder="Nombre cliente">
+    <input id="producto" placeholder="Producto">
+    <input id="precio" placeholder="Precio">
+    <input id="telefono" placeholder="WhatsApp cliente">
+    <button onclick="crearPedido()">Generar Link de Pago</button>
+    <div id="resultado" class="resultado" style="display:none"></div>
+  </div>
 
-body{
-background:#f4f6f9;
-padding:30px;
-}
+  <script>
+    function crearPedido() {
+      let cliente = document.getElementById("cliente").value;
+      let producto = document.getElementById("producto").value;
+      let precio = document.getElementById("precio").value;
+      let telefono = document.getElementById("telefono").value;
+      let pedido = Math.floor(Math.random() * 900000 + 100000);
+      let link = window.location.href + "pago/" + pedido;
+      let mensaje = "Hola " + cliente + "%0A%0A" + "Tu pedido está listo:%0A" + "Producto: " + producto + "%0A" + "Valor: $" + precio + "%0A%0A" + "Paga aquí:%0A" + link;
+      let whatsapp = "https://wa.me/57" + telefono + "?text=" + mensaje;
+      let html = `
+        <b>ID Pedido:</b> ${pedido}<br><br>
+        <b>Link de pago:</b><br>
+        <div class="link">${link}</div><br>
+        <div id="qrcode"></div><br>
+        <a href="${whatsapp}" target="_blank">
+          <button>Enviar por WhatsApp</button>
+        </a>
+        <br><br>
+        <input id="otp" placeholder="Código OTP">
+        <button onclick="validarOTP(${pedido})">Autorizar Pago</button>
+      `;
+      document.getElementById("resultado").style.display = "block";
+      document.getElementById("resultado").innerHTML = html;
+      new QRCode(document.getElementById("qrcode"), link);
 
-.panel{
-max-width:500px;
-margin:auto;
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 5px 25px rgba(0,0,0,0.1);
-}
+      // Guardar en Firebase
+      set(ref(db, 'pedidos/' + pedido), {
+        cliente, producto, precio, estado: 'PENDIENTE'
+      });
+    }
 
-h2{
-text-align:center;
-margin-bottom:20px;
-}
-
-input{
-width:100%;
-padding:12px;
-margin:8px 0;
-border:1px solid #ddd;
-border-radius:6px;
-}
-
-button{
-width:100%;
-padding:14px;
-background:#ff6a00;
-border:none;
-color:white;
-font-size:16px;
-border-radius:6px;
-cursor:pointer;
-margin-top:10px;
-}
-
-.resultado{
-margin-top:20px;
-padding:15px;
-background:#f1f1f1;
-border-radius:6px;
-}
-
-.link{
-word-break:break-all;
-font-size:14px;
-margin:10px 0;
-}
-
-.historial{
-margin-top:30px;
-}
-
-.pedido{
-padding:12px;
-border-bottom:1px solid #eee;
-font-size:14px;
-}
-
-.estado{
-font-weight:bold;
-}
-
-.pagado{
-color:green;
-}
-
-.pendiente{
-color:red;
-}
-
-.smallbtn{
-margin-top:8px;
-padding:8px;
-font-size:13px;
-background:#444;
-}
-
-canvas{
-margin-top:10px;
-}
-
-</style></head><body><div class="panel"><h2>Central de Cobros Online</h2><input id="cliente" placeholder="Nombre cliente"><input id="producto" placeholder="Producto"><input id="precio" placeholder="Precio"><input id="telefono" placeholder="WhatsApp cliente (sin 57)"><button onclick="crearPedido()">Generar Link de Pago</button>
-
-<div id="resultado" class="resultado" style="display:none"></div><div class="historial"><h3>Historial de pedidos</h3><div id="listaPedidos"></div></div></div><script>
-
-let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-
-function guardar(){
-localStorage.setItem("pedidos", JSON.stringify(pedidos));
-}
-
-function crearPedido(){
-
-let cliente = document.getElementById("cliente").value;
-let producto = document.getElementById("producto").value;
-let precio = document.getElementById("precio").value;
-let telefono = document.getElementById("telefono").value;
-
-let pedidoID = "PED" + Date.now();
-
-let link = "https://tusitio.com/pago/" + pedidoID;
-
-let mensaje = "Hola " + cliente +
-"%0A%0A" +
-"Tu pedido está listo:%0A" +
-"Producto: " + producto +
-"%0A" +
-"Valor: $" + precio +
-"%0A%0A" +
-"Paga aquí:%0A" +
-link;
-
-let whatsapp = "https://wa.me/57" + telefono + "?text=" + mensaje;
-
-pedidos.push({
-id: pedidoID,
-cliente: cliente,
-producto: producto,
-precio: precio,
-telefono: telefono,
-estado: "PENDIENTE"
-});
-
-guardar();
-mostrarPedidos();
-
-let html = `
-<b>ID Pedido:</b> ${pedidoID}<br>
-<b>Link de pago:</b>
-<div class="link">${link}</div>
-<canvas id="qr"></canvas>
-
-<a href="${whatsapp}" target="_blank">
-<button>Enviar por WhatsApp</button>
-</a>
-`;
-
-document.getElementById("resultado").style.display = "block";
-document.getElementById("resultado").innerHTML = html;
-
-QRCode.toCanvas(document.getElementById("qr"), link);
-
-}
-
-function mostrarPedidos(){
-
-let lista = document.getElementById("listaPedidos");
-
-lista.innerHTML = "";
-
-pedidos.forEach((p,i)=>{
-
-let clase = p.estado=="PAGADO" ? "pagado":"pendiente";
-
-lista.innerHTML += `
-
-<div class="pedido">
-
-<b>${p.producto}</b><br>
-
-Cliente: ${p.cliente}<br>
-
-Valor: $${p.precio}<br>
-
-Estado: <span class="estado ${clase}">${p.estado}</span><br>
-
-<button class="smallbtn" onclick="marcarPagado(${i})">
-Marcar Pagado
-</button>
-
-</div>
-
-`;
-
-});
-
-}
-
-function marcarPagado(i){
-
-pedidos[i].estado="PAGADO";
-
-guardar();
-
-mostrarPedidos();
-
-}
-
-mostrarPedidos();
-
-</script></body>
+    function validarOTP(pedido) {
+      let otp = document.getElementById("otp").value;
+      if (otp === "123456") { // Simulación OTP
+        set(ref(db, 'pedidos/' + pedido + '/estado'), 'PAGADO');
+        alert("Pago autorizado");
+      } else {
+        alert("OTP inválido");
+      }
+    }
+  </script>
+</body>
 </html>
+
